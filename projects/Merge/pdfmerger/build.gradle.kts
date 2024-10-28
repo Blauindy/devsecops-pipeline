@@ -40,3 +40,13 @@ tasks.jar {
         )
     }
 }
+
+plugins {
+    id "org.owasp.dependencycheck" version "6.0.2"
+}
+
+dependencyCheck {
+    failBuildOnCVSS = 7
+    format = 'ALL'
+    outputDirectory = "${buildDir}/reports/dependency-check"
+}
