@@ -19,28 +19,14 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
-      - name: Download OWASP Dependency Check
-        run: |
-          echo "Downloading OWASP Dependency Check..."
-          curl -LO https://github.com/jeremylong/DependencyCheck/releases/tag/v11.0.0/dependency-check-11.0.0-release.zip 
-          echo "Checking if the ZIP file was downloaded successfully..."
-          ls -l $HOME/dependency-check.zip  # Zeigt Informationen über die heruntergeladene Datei an
-          echo "Unzipping the file..."
-          unzip -o $HOME/dependency-check.zip -d $HOME/dependency-check
-          echo "Listing the contents of the dependency-check directory:"
-          ls -R $HOME/dependency-check
-      - name: Verify existence of dependency-check.sh
-        run: |
-          echo "Checking if dependency-check.sh exists..."
-          find $HOME/dependency-check -name "dependency-check.sh"
-      - name: Make dependency-check.sh executable
-        run: |
-          echo "Attempting to set permissions for dependency-check.sh"
-          chmod +x $HOME/dependency-check/bin/dependency-check.sh || echo "dependency-check.sh not found, skipping chmod."
       - name: Run OWASP Dependency Check
         run: |
-          echo "Running OWASP Dependency Check..."
-          $HOME/dependency-check/bin/dependency-check.sh --project JavaApp --scan ./ --format HTML --out ./dependency-check-report.html
+            curl -LO https://github.com/jeremylong/DependencyCheck/releases/tag/v11.0.0/dependency-check-11.0.0-release.zip 
+            unzip dependency-check-6.0.2-release.zip -d $HOME/dependency-check
+            $HOME/dependency-check/bin/dependency-check.sh --project JavaApp --scan ./ --format HTML --out ./dependency-check-report.html
+      - name: Run OWASP Dependency Check
+        run: |
+            $HOME/dependency-check/bin/dependency-check.sh --project JavaApp --scan ./ --format HTML --out ./dependency-check-report.html
       - name: Upload report
         uses: actions/upload-artifact@v3
         with:
