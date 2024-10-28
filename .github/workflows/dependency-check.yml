@@ -4,10 +4,11 @@ on:
   push:
     branches:
       - main
-      - PackageScanner
+      - develop
   pull_request:
     branches:
       - main
+      - develop
 
 jobs:
   dependency-check:
@@ -17,7 +18,7 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'  
+          distribution: 'temurin'
           java-version: '11'
       - name: Download OWASP Dependency Check
         run: |
@@ -25,8 +26,18 @@ jobs:
           curl -LO https://github.com/jeremylong/DependencyCheck/releases/download/v8.1.2/dependency-check-8.1.2-release.zip
           echo "Unzipping the file..."
           unzip -o dependency-check-8.1.2-release.zip -d $HOME/dependency-check
-          echo "Listing the contents of the directory:"
-          ls -R $HOME/dependency-check  # Zeigt alle entpackten Dateien und Verzeichnisse an
+          echo "Listing the contents of the dependency-check directory:"
+          ls -R $HOME/dependency-check
+          echo "Done."
+      - name: Verify existence of dependency-check.sh
+        run: |
+          echo "Checking if dependency-check.sh exists..."
+          if [ -f "$HOME/dependency-check/bin/dependency-check.sh" ]; then
+              echo "dependency-check.sh found."
+          else
+              echo "dependency-check.sh NOT found."
+              exit 1
+          fi
       - name: Make dependency-check.sh executable
         run: |
           echo "Attempting to set permissions for dependency-check.sh"
