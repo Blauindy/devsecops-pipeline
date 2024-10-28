@@ -22,7 +22,7 @@ jobs:
       - name: Run OWASP Dependency Check
         run: |
             curl -LO https://github.com/jeremylong/DependencyCheck/releases/tag/v11.0.0/dependency-check-11.0.0-release.zip 
-            unzip dependency-check-6.0.2-release.zip -d $HOME/dependency-check
+            unzip dependency-check-11.0.0-release.zip  -d $HOME/dependency-check
             $HOME/dependency-check/bin/dependency-check.sh --project JavaApp --scan ./ --format HTML --out ./dependency-check-report.html
       - name: Run OWASP Dependency Check
         run: |
