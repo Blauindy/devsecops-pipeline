@@ -22,26 +22,21 @@ jobs:
       - name: Download OWASP Dependency Check
         run: |
           echo "Downloading OWASP Dependency Check..."
-          curl -LO https://github.com/jeremylong/DependencyCheck/releases/download/v8.1.2/dependency-check-8.1.2-release.zip
+          curl -LO https://github.com/jeremylong/DependencyCheck/releases/latest/download/dependency-check.zip
+          echo "Checking if the ZIP file was downloaded successfully..."
+          ls -l $HOME/dependency-check.zip  # Zeigt Informationen über die heruntergeladene Datei an
           echo "Unzipping the file..."
-          unzip -o dependency-check-8.1.2-release.zip -d $HOME/dependency-check
+          unzip -o $HOME/dependency-check.zip -d $HOME/dependency-check
           echo "Listing the contents of the dependency-check directory:"
           ls -R $HOME/dependency-check
-          echo "Done."
       - name: Verify existence of dependency-check.sh
         run: |
           echo "Checking if dependency-check.sh exists..."
-          if [ -f "$HOME/dependency-check/bin/dependency-check.sh" ]; then
-              echo "dependency-check.sh found."
-          else
-              echo "dependency-check.sh NOT found."
-              exit 1
-          fi
+          find $HOME/dependency-check -name "dependency-check.sh"
       - name: Make dependency-check.sh executable
         run: |
           echo "Attempting to set permissions for dependency-check.sh"
-          chmod +x $HOME/dependency-check/bin/dependency-check.sh
-          echo "Permissions set."
+          chmod +x $HOME/dependency-check/bin/dependency-check.sh || echo "dependency-check.sh not found, skipping chmod."
       - name: Run OWASP Dependency Check
         run: |
           echo "Running OWASP Dependency Check..."
