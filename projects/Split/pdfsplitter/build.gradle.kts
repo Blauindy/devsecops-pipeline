@@ -9,6 +9,15 @@ plugins {
     id("java")
     id("org.springframework.boot") version "3.2.2"
     id("io.spring.dependency-management") version "1.1.4"
+    id("org.sonarqube") version "5.1.0.4882"
+}
+
+sonar {
+  properties {
+    property("sonar.projectKey", "Blauindy_devsecops-pipeline")
+    property("sonar.organization", "inf22")
+    property("sonar.host.url", "https://sonarcloud.io")
+  }
 }
 
 dependencies {
