@@ -19,7 +19,7 @@ jobs:
         with:
           distribution: 'temurin'  
           java-version: '11'
-      - name: Run OWASP Dependency Check
+      - name: Install OWASP Dependency Check
         run: |
           curl -LO https://github.com/jeremylong/DependencyCheck/releases/download/v8.1.2/dependency-check-8.1.2-release.zip
           unzip dependency-check-8.1.2-release.zip -d $HOME/dependency-check
