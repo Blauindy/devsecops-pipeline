@@ -20,9 +20,13 @@ jobs:
           distribution: 'temurin'  
           java-version: '11'
       - name: Run OWASP Dependency Check
-        uses: xvik/gradle-dependency-check-action@v1.4.1
-        with:
-          arguments: "--scan ./ --format HTML --out ./dependency-check-report.html"
+        run: |
+          curl -LO https://github.com/jeremylong/DependencyCheck/releases/download/v8.1.2/dependency-check-8.1.2-release.zip
+          unzip dependency-check-8.1.2-release.zip -d $HOME/dependency-check
+          chmod +x $HOME/dependency-check/bin/dependency-check.sh
+      - name: Run OWASP Dependency Check
+        run: |
+          $HOME/dependency-check/bin/dependency-check.sh --project JavaApp --scan ./ --format HTML --out ./dependency-check-report.html
       - name: Upload report
         uses: actions/upload-artifact@v4
         with:
