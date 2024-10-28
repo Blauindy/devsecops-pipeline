@@ -22,7 +22,7 @@ jobs:
       - name: Download OWASP Dependency Check
         run: |
           echo "Downloading OWASP Dependency Check..."
-          curl -LO https://github.com/jeremylong/DependencyCheck/releases/latest/download/dependency-check.zip
+          curl -LO https://github.com/jeremylong/DependencyCheck/releases/tag/v11.0.0/dependency-check-11.0.0-release.zip 
           echo "Checking if the ZIP file was downloaded successfully..."
           ls -l $HOME/dependency-check.zip  # Zeigt Informationen über die heruntergeladene Datei an
           echo "Unzipping the file..."
