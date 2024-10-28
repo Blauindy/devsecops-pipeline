@@ -1,1 +1,84 @@
-name: DevSecOps Pipeline
+name: SonarQube Analysis for Multiple Projects
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  # Job für das erste Java-Projekt
+  java_project1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+
+      - name: Build Merger
+        working-directory: projects/Merge/pdfmerger  # Pfad zum ersten Java-Projekt
+        run: mvn clean install
+
+      - name: Run SonarQube Analysis for Java Project 1
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        working-directory: projects/Merge+/pdfmerger
+        run: |
+          mvn sonar:sonar \
+            -Dsonar.projectKey=my_java_project1 \
+            -Dsonar.host.url=https://sonarqube.example.com \
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+
+  # Job für das zweite Java-Projekt
+  java_project2:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+
+      - name: Build Spliter
+        working-directory: projects/Split/pdfsplitter  # Pfad zum zweiten Java-Projekt
+        run: mvn clean install
+
+      - name: Run SonarQube Analysis for Java Project 2
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        working-directory: projects/Split/pdfsplitter
+        run: |
+          mvn sonar:sonar \
+            -Dsonar.projectKey=my_java_project2 \
+            -Dsonar.host.url=https://sonarqube.example.com \
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+
+  # Job für das .NET-Projekt
+   #dotnet_project:
+   #  runs-on: ubuntu-latest
+   #  steps:
+   #    - name: Checkout code
+   #      uses: actions/checkout@v2
+ #
+   #    - name: Set up .NET
+     #    uses: actions/setup-dotnet@v2
+       #  with:
+         #  dotnet-version: '6.x'
+ #
+  #     - name: Build .NET Project
+   #      working-directory: projects/dotnet_project  # Pfad zum .NET-Projekt
+   #      run: dotnet build
+
+  #     - name: Run SonarQube Analysis for .NET Project
+   #      env:
+    #       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+     #    working-directory: projects/dotnet_project
+      #   run: |
+       #    dotnet-sonarscanner begin /k:"my_dotnet_project" /d:sonar.host.url="https://sonarqube.example.com" /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+        #   dotnet build
+         #  dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
