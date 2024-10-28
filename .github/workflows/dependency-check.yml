@@ -24,7 +24,7 @@ jobs:
           unzip dependency-check-6.0.2-release.zip -d $HOME/dependency-check
           $HOME/dependency-check/bin/dependency-check.sh --project JavaApp --scan ./ --format HTML --out ./dependency-check-report.html
       - name: Upload report
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Dependency-Check-Report
           path: ./dependency-check-report.html
