@@ -22,8 +22,11 @@ jobs:
           java-version: 17
           distribution: 'zulu'
 
-      - name: Make gradlew executable  
-        run: chmod +x gradlew
+      - name: Make gradlew executable
+        run: chmod +x projects/Merge/pdfmerger/gradlew
+        
+      - name: Make gradlew executable
+        run: chmod +x projects/Split/pdfsplitter
 
       - name: Cache SonarCloud packages
         uses: actions/cache@v4
