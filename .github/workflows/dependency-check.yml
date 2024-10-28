@@ -19,14 +19,36 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
+      - name: Download OWASP Dependency Check
+        run: |
+          echo "Downloading OWASP Dependency Check..."
+          curl -L -o dependency-check.zip https://github.com/jeremylong/DependencyCheck/releases/latest/download/dependency-check-11.0.0-release.zip || {
+            echo "Download failed!"
+            exit 1
+          }
+          echo "Verifying the downloaded ZIP file..."
+          if [[ $(unzip -t dependency-check.zip) ]]; then
+            echo "ZIP file is valid."
+          else
+            echo "ZIP file is corrupted or invalid."
+            exit 1
+          fi
+          echo "Unzipping the file..."
+          unzip -o dependency-check.zip -d $HOME/dependency-check
+          echo "Listing the contents of the dependency-check directory:"
+          ls -R $HOME/dependency-check
+      - name: Verify existence of dependency-check.sh
+        run: |
+          echo "Checking if dependency-check.sh exists..."
+          find $HOME/dependency-check -name "dependency-check.sh"
+      - name: Make dependency-check.sh executable
+        run: |
+          echo "Attempting to set permissions for dependency-check.sh"
+          chmod +x $HOME/dependency-check/bin/dependency-check.sh || echo "dependency-check.sh not found, skipping chmod."
       - name: Run OWASP Dependency Check
         run: |
-            curl -LO https://github.com/jeremylong/DependencyCheck/releases/tag/v11.0.0/dependency-check-11.0.0-release.zip 
-            unzip dependency-check-11.0.0-release.zip  -d $HOME/dependency-check
-            $HOME/dependency-check/bin/dependency-check.sh --project JavaApp --scan ./ --format HTML --out ./dependency-check-report.html
-      - name: Run OWASP Dependency Check
-        run: |
-            $HOME/dependency-check/bin/dependency-check.sh --project JavaApp --scan ./ --format HTML --out ./dependency-check-report.html
+          echo "Running OWASP Dependency Check..."
+          $HOME/dependency-check/bin/dependency-check.sh --project JavaApp --scan ./ --format HTML --out ./dependency-check-report.html
       - name: Upload report
         uses: actions/upload-artifact@v3
         with:
