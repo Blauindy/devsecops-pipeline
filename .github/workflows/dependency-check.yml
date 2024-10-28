@@ -35,8 +35,8 @@ jobs:
           fi
           echo "Unzipping the file..."
           unzip -o dependency-check.zip -d $HOME/dependency-check
-          echo "Listing the contents of the dependency-check directory:"
-          ls -R $HOME/dependency-check
+          echo "Listing the contents of the dependency-check directory after unzipping:"
+          ls -R $HOME/dependency-check  # Überprüfen des Inhalts nach dem Entpacken
       - name: Verify existence of dependency-check.sh
         run: |
           echo "Checking if dependency-check.sh exists..."
@@ -44,11 +44,11 @@ jobs:
       - name: Make dependency-check.sh executable
         run: |
           echo "Attempting to set permissions for dependency-check.sh"
-          chmod +x $HOME/dependency-check/bin/dependency-check.sh || echo "dependency-check.sh not found, skipping chmod."
+          chmod +x $(find $HOME/dependency-check -name "dependency-check.sh") || echo "dependency-check.sh not found, skipping chmod."
       - name: Run OWASP Dependency Check
         run: |
           echo "Running OWASP Dependency Check..."
-          $HOME/dependency-check/bin/dependency-check.sh --project JavaApp --scan ./ --format HTML --out ./dependency-check-report.html
+          $(find $HOME/dependency-check -name "dependency-check.sh") --project JavaApp --scan ./ --format HTML --out ./dependency-check-report.html
       - name: Upload report
         uses: actions/upload-artifact@v3
         with:
