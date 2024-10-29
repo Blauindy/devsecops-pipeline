@@ -1,0 +1,54 @@
+# .github/workflows/trivy-scan.yml
+name: Docker Image Build and Security Scan
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the code repository
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      # Set up Docker for building the image
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      # Log in to GitHub Container Registry (optional; configure for other registries as needed)
+      - name: Log in to DockerHub
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+        run: echo "${DOCKERHUB_TOKEN}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin
+
+      # Build the Docker image
+      - name: Build Docker Image
+        run: |
+          docker build -t my-app:latest .
+
+      # Pull the Trivy image
+      - name: Pull Trivy Scanner
+        run: docker pull aquasec/trivy:latest
+
+      # Run Trivy scan on the Docker image
+      - name: Scan Docker Image with Trivy
+        run: |
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            -v $HOME/.cache/trivy:/root/.cache/trivy \
+            aquasec/trivy:latest image --exit-code 1 --severity CRITICAL my-app:latest
+
+      # (Optional) Push the Docker image if no vulnerabilities are found
+      - name: Push Docker Image
+        if: success()
+        run: |
+          docker tag my-app:latest my-dockerhub-user/my-app:latest
+          docker push my-dockerhub-user/my-app:latest
