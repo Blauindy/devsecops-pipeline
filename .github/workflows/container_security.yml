@@ -23,24 +23,33 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       # Build the Docker image
-      - name: Build Docker Image
-        run: |
-          docker build -t my-app:latest ./projects/Merge/pdfmerger
+      #- name: Build Docker Image
+      #  run: |
+      #    docker build -t my-app:latest ./projects/Merge/pdfmerger
+      #    docker build -t my-app:latest ./projects/Split/pdfsplitter
 
       # Pull the Trivy image
-      - name: Pull Trivy Scanner
-        run: docker pull aquasec/trivy:latest
+      #- name: Pull Trivy Scanner
+      #  run: docker pull aquasec/trivy:latest
 
-      # Trivy-Scan mit Docker
-      - name: Scan Docker Image with Trivy
+      - name: Scan Multiple Projects with Trivy
         run: |
-          docker run \
-            --rm \
-            -v "$(realpath .):/opt/src" \
-            -v /run/docker.sock:/var/run/docker.sock \
-            -v /tmp/trivy-cache:/cache \
-            -e "TRIVY_DB_REPOSITORY=public.ecr.aws/aquasecurity/trivy-db" \
-            -e "TRIVY_JAVA_DB_REPOSITORY=public.ecr.aws/aquasecurity/trivy-java-db" \
-            -w /opt/src \
-            aquasec/trivy:0.56.2 --cache-dir /cache image --quiet my-app:latest
+          # Hier die Verzeichnisse der Projekte definieren
+          projects=("projects/Merge/pdfmerger" "projects/Split/pdfsplitter")
+          for project in "${projects[@]}"; do
+            echo "Building and Scanning Docker Image for $project..."
+            # Docker-Image für das jeweilige Projekt erstellen
+            docker build -t "$project-image:latest" "./$project"
+
+            # Trivy-Scan für das Docker-Image des Projekts durchführen
+            docker run \
+              --rm \
+              -v "$(realpath .):/opt/src" \
+              -v /run/docker.sock:/var/run/docker.sock \
+              -v /tmp/trivy-cache:/cache \
+              -e "TRIVY_DB_REPOSITORY=public.ecr.aws/aquasecurity/trivy-db" \
+              -e "TRIVY_JAVA_DB_REPOSITORY=public.ecr.aws/aquasecurity/trivy-java-db" \
+              -w /opt/src \
+              aquasec/trivy:0.56.2 --cache-dir /cache image --quiet "$project-image:latest"
+          done
 
