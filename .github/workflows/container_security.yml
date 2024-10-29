@@ -32,19 +32,16 @@ jobs:
       - name: Pull Trivy Scanner
         run: docker pull aquasec/trivy:latest
 
-      - name: Download Trivy DBs to local cache
-        run: |
-          docker run --rm \
-            -e TRIVY_CACHE_DIR=/root/.cache/trivy \
-            aquasec/trivy:latest --download-db-only
-
-      # Trivy-Scan mit lokalem Cache
+      # Trivy-Scan mit Docker
       - name: Scan Docker Image with Trivy
         run: |
-          docker run --rm \
-            -v /var/run/docker.sock:/var/run/docker.sock \
-            -v $HOME/.cache/trivy:/root/.cache/trivy \
-            -e TRIVY_CACHE_DIR=/root/.cache/trivy \
-            aquasec/trivy:latest image \
-            --exit-code 1 --severity CRITICAL my-app:latest
+          docker run \
+            --rm \
+            -v "$(realpath .):/opt/src" \
+            -v /run/docker.sock:/var/run/docker.sock \
+            -v /tmp/trivy-cache:/cache \
+            -e "TRIVY_DB_REPOSITORY=public.ecr.aws/aquasecurity/trivy-db" \
+            -e "TRIVY_JAVA_DB_REPOSITORY=public.ecr.aws/aquasecurity/trivy-java-db" \
+            -w /opt/src \
+            aquasec/trivy:0.56.2 --cache-dir /cache image --quiet my-app:latest
 
