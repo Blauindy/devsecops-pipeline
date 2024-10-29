@@ -45,10 +45,3 @@ jobs:
             -v /var/run/docker.sock:/var/run/docker.sock \
             -v $HOME/.cache/trivy:/root/.cache/trivy \
             aquasec/trivy:latest image --exit-code 1 --severity CRITICAL my-app:latest
-
-      # (Optional) Push the Docker image if no vulnerabilities are found
-      - name: Push Docker Image
-        if: success()
-        run: |
-          docker tag my-app:latest my-dockerhub-user/my-app:latest
-          docker push my-dockerhub-user/my-app:latest
