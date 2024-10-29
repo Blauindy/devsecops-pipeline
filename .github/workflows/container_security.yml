@@ -28,8 +28,11 @@ jobs:
       - name: Scan Docker Images with Trivy
         run: |
           images=("pdfmerger" "pdfsplitter")
+          scan_results_dir="./trivy-results"
+          mkdir -p "$scan_results_dir"
           for image in "${images[@]}"; do
             echo "Scanning Docker Image: $image..."
+            trivy_output="$scan_results_dir/${image}_scan_results.txt"
             docker run \
               --rm \
               -v "$(realpath .):/opt/src" \
@@ -38,8 +41,7 @@ jobs:
               -e "TRIVY_DB_REPOSITORY=public.ecr.aws/aquasecurity/trivy-db" \
               -e "TRIVY_JAVA_DB_REPOSITORY=public.ecr.aws/aquasecurity/trivy-java-db" \
               -w /opt/src \
-              aquasec/trivy:0.56.2 --cache-dir /cache image --quiet $image:latest \
-              | tee trivy-scan-$image-results.txt
+              aquasec/trivy:0.56.2 --cache-dir /cache image --quiet $image:latest > "$trivy_output"
           done
 
       - name: Upload Trivy Scan Results
