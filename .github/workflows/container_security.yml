@@ -14,26 +14,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the code repository
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      # Set up Docker for building the image
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      # Build the Docker image
       - name: Build Docker Image
         run: |
           docker build -t pdfmerger:latest ./projects/Merge/pdfmerger
           docker build -t pdfsplitter:latest ./projects/Split/pdfsplitter
 
-      # Trivy-Scan mit Docker
-      - name: Scan Docker Image with Trivy
+      - name: Scan Docker Images with Trivy
         run: |
           images=("pdfmerger" "pdfsplitter")
           for image in "${images[@]}"; do
-            echo "Building and Scanning Docker Image for $image..."
+            echo "Scanning Docker Image: $image..."
             docker run \
               --rm \
               -v "$(realpath .):/opt/src" \
@@ -43,18 +39,6 @@ jobs:
               -e "TRIVY_JAVA_DB_REPOSITORY=public.ecr.aws/aquasecurity/trivy-java-db" \
               -w /opt/src \
               aquasec/trivy:0.56.2 --cache-dir /cache image --quiet $image:latest
+              | tee trivy-scan-$image-results.txt
           done
-
-      # Trivy-Scan mit Docker
-      #- name: Scan Docker Image with Trivy
-      #  run: |
-      #    docker run \
-      #      --rm \
-      #      -v "$(realpath .):/opt/src" \
-      #      -v /run/docker.sock:/var/run/docker.sock \
-      #      -v /tmp/trivy-cache:/cache \
-      #      -e "TRIVY_DB_REPOSITORY=public.ecr.aws/aquasecurity/trivy-db" \
-      #      -e "TRIVY_JAVA_DB_REPOSITORY=public.ecr.aws/aquasecurity/trivy-java-db" \
-      #      -w /opt/src \
-      #      aquasec/trivy:0.56.2 --cache-dir /cache image --quiet pdfsplitter:latest
 
