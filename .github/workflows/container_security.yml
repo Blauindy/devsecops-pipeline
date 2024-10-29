@@ -25,7 +25,8 @@ jobs:
       # Build the Docker image
       - name: Build Docker Image
         run: |
-          docker build -t my-app:latest ./projects/Merge/pdfmerger
+          docker build -t pdfmerger:latest ./projects/Merge/pdfmerger
+          docker build -t pdfsplitter:latest ./projects/Split/pdfsplitter
 
       # Trivy-Scan mit Docker
       - name: Scan Docker Image with Trivy
@@ -38,12 +39,7 @@ jobs:
             -e "TRIVY_DB_REPOSITORY=public.ecr.aws/aquasecurity/trivy-db" \
             -e "TRIVY_JAVA_DB_REPOSITORY=public.ecr.aws/aquasecurity/trivy-java-db" \
             -w /opt/src \
-            aquasec/trivy:0.56.2 --cache-dir /cache image --quiet my-app:latest
-
-      # Build the Docker image
-      - name: Build Docker Image
-        run: |
-          docker build -t my-app:latest ./projects/Split/pdfsplitter
+            aquasec/trivy:0.56.2 --cache-dir /cache image --quiet pdfmerger:latest
 
       # Trivy-Scan mit Docker
       - name: Scan Docker Image with Trivy
@@ -56,5 +52,5 @@ jobs:
             -e "TRIVY_DB_REPOSITORY=public.ecr.aws/aquasecurity/trivy-db" \
             -e "TRIVY_JAVA_DB_REPOSITORY=public.ecr.aws/aquasecurity/trivy-java-db" \
             -w /opt/src \
-            aquasec/trivy:0.56.2 --cache-dir /cache image --quiet my-app:latest
+            aquasec/trivy:0.56.2 --cache-dir /cache image --quiet pdfsplitter:latest
 
