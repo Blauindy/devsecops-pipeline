@@ -39,7 +39,7 @@ jobs:
           for project in "${projects[@]}"; do
             echo "Building and Scanning Docker Image for $project..."
             # Docker-Image für das jeweilige Projekt erstellen
-            docker build -t "$project-image:latest" "./$project"
+            docker build -t "my-app:latest" "./$project"
 
             # Trivy-Scan für das Docker-Image des Projekts durchführen
             docker run \
