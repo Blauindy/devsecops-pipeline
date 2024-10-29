@@ -23,34 +23,38 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       # Build the Docker image
-      #- name: Build Docker Image
-      #  run: |
-      #    docker build -t my-app:latest ./projects/Merge/pdfmerger
-      #    docker build -t my-app:latest ./projects/Split/pdfsplitter
-
-      # Pull the Trivy image
-      #- name: Pull Trivy Scanner
-      #  run: docker pull aquasec/trivy:latest
-
-      - name: Scan Multiple Projects with Trivy
+      - name: Build Docker Image
         run: |
-          # Hier die Verzeichnisse der Projekte definieren
-          projects=("projects/Merge/pdfmerger" "projects/Split/pdfsplitter")
-          for project in "${projects[@]}"; do
-            echo "Building and Scanning Docker Image for $project..."
-            # Docker-Image für das jeweilige Projekt erstellen
-            image_name="${project}-image:latest"
-            docker build -t "my-app:latest" "./$project"
+          docker build -t my-app:latest ./projects/Merge/pdfmerger
 
-            # Trivy-Scan für das Docker-Image des Projekts durchführen
-            docker run \
-              --rm \
-              -v "$(realpath .):/opt/src" \
-              -v /run/docker.sock:/var/run/docker.sock \
-              -v /tmp/trivy-cache:/cache \
-              -e "TRIVY_DB_REPOSITORY=public.ecr.aws/aquasecurity/trivy-db" \
-              -e "TRIVY_JAVA_DB_REPOSITORY=public.ecr.aws/aquasecurity/trivy-java-db" \
-              -w /opt/src \
-              aquasec/trivy:0.56.2 --cache-dir /cache image --quiet "$image_name"
-          done
+      # Trivy-Scan mit Docker
+      - name: Scan Docker Image with Trivy
+        run: |
+          docker run \
+            --rm \
+            -v "$(realpath .):/opt/src" \
+            -v /run/docker.sock:/var/run/docker.sock \
+            -v /tmp/trivy-cache:/cache \
+            -e "TRIVY_DB_REPOSITORY=public.ecr.aws/aquasecurity/trivy-db" \
+            -e "TRIVY_JAVA_DB_REPOSITORY=public.ecr.aws/aquasecurity/trivy-java-db" \
+            -w /opt/src \
+            aquasec/trivy:0.56.2 --cache-dir /cache image --quiet my-app:latest
+
+      # Build the Docker image
+      - name: Build Docker Image
+        run: |
+          docker build -t my-app:latest ./projects/Split/pdfsplitter
+
+      # Trivy-Scan mit Docker
+      - name: Scan Docker Image with Trivy
+        run: |
+          docker run \
+            --rm \
+            -v "$(realpath .):/opt/src" \
+            -v /run/docker.sock:/var/run/docker.sock \
+            -v /tmp/trivy-cache:/cache \
+            -e "TRIVY_DB_REPOSITORY=public.ecr.aws/aquasecurity/trivy-db" \
+            -e "TRIVY_JAVA_DB_REPOSITORY=public.ecr.aws/aquasecurity/trivy-java-db" \
+            -w /opt/src \
+            aquasec/trivy:0.56.2 --cache-dir /cache image --quiet my-app:latest
 
