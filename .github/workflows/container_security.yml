@@ -39,6 +39,7 @@ jobs:
           for project in "${projects[@]}"; do
             echo "Building and Scanning Docker Image for $project..."
             # Docker-Image für das jeweilige Projekt erstellen
+            image_name="${project}-image:latest"
             docker build -t "my-app:latest" "./$project"
 
             # Trivy-Scan für das Docker-Image des Projekts durchführen
@@ -50,6 +51,6 @@ jobs:
               -e "TRIVY_DB_REPOSITORY=public.ecr.aws/aquasecurity/trivy-db" \
               -e "TRIVY_JAVA_DB_REPOSITORY=public.ecr.aws/aquasecurity/trivy-java-db" \
               -w /opt/src \
-              aquasec/trivy:0.56.2 --cache-dir /cache image --quiet "$project-image:latest"
+              aquasec/trivy:0.56.2 --cache-dir /cache image --quiet "$image_name"
           done
 
