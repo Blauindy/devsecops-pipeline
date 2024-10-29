@@ -1,0 +1,33 @@
+name: ZAP Security Scan
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  zap-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Build Spring Docker Image
+        run: docker build -t my-spring-app .
+
+      - name: Start Spring Application
+        run: |
+          docker network create zap-spring-network
+          docker run -d --name my-spring-app --network zap-spring-network -p 8080:8080 my-spring-app
+      
+      - name: Run ZAP Baseline Scan
+        run: docker run --rm --network zap-spring-network owasp/zap2docker-stable zap-baseline.py -t http://my-spring-app:8080 -r zap_report.html
+
+      - name: Upload ZAP Report
+        uses: actions/upload-artifact@v2
+        with:
+          name: ZAP Report
+          path: zap_report.html
