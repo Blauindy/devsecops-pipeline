@@ -35,7 +35,7 @@ jobs:
       - name: Scan Multiple Projects with Trivy
         run: |
           # Hier die Verzeichnisse der Projekte definieren
-          projects=("projects/Merge/pdfmerger" "projects/Split/pdfsplitter")
+          projects=("projects/merge/pdfmerger" "projects/split/pdfsplitter")
           for project in "${projects[@]}"; do
             echo "Building and Scanning Docker Image for $project..."
             # Docker-Image für das jeweilige Projekt erstellen
