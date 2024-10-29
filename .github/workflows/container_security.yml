@@ -4,7 +4,7 @@ name: Docker Image Build and Security Scan
 on:
   push:
     branches:
-      - container_security
+      - main
   pull_request:
     branches:
       - main
