@@ -41,4 +41,10 @@ jobs:
               aquasec/trivy:0.56.2 --cache-dir /cache image --quiet $image:latest \
               | tee trivy-scan-$image-results.txt
           done
+          
+      - name: Upload Trivy Scan Results
+        uses: actions/upload-artifact@v2
+        with:
+          name: trivy-scan-results
+          path: trivy-results/
 
