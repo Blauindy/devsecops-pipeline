@@ -12,9 +12,6 @@ on:
 jobs:
   build-and-scan:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./app
 
     steps:
       # Checkout the code repository
