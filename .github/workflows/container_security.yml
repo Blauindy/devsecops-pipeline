@@ -24,6 +24,7 @@ jobs:
 
       # Build the Docker image
       - name: Build Docker Image
+        working-directory: projects/Merge/pdfmerger
         run: |
           docker build -t my-app:latest .
 
