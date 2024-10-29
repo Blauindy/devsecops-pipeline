@@ -22,28 +22,21 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      # Cache Trivy vulnerability DB and Java DB
-      - name: Cache Trivy DB and Java DB
-        uses: actions/cache@v2
-        with:
-          path: ~/.cache/trivy
-          key: ${{ runner.os }}-trivy-db
-          restore-keys: |
-            ${{ runner.os }}-trivy-db
-
       # Build the Docker image
       - name: Build Docker Image
         working-directory: projects/Merge/pdfmerger
-        run: docker build -t my-app:latest .
+        run: |
+          docker build -t my-app:latest .
 
-      # Pull the latest Trivy scanner image
+      # Pull the Trivy image
       - name: Pull Trivy Scanner
         run: docker pull aquasec/trivy:latest
 
-      # Run Trivy scan on the Docker image with cached DBs
-      - name: Scan Docker Image with Trivy and cached DBs
+      # Run Trivy scan on the Docker image
+      - name: Scan Docker Image with Trivy
         run: |
           docker run --rm \
             -v /var/run/docker.sock:/var/run/docker.sock \
             -v $HOME/.cache/trivy:/root/.cache/trivy \
-            aquasec/trivy:latest image --skip-update --exit-code 1 --severity CRITICAL my-app:latest
+            aquasec/trivy:latest image --exit-code 1 --severity CRITICAL my-app:latest
+
