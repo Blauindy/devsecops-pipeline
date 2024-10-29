@@ -12,6 +12,9 @@ on:
 jobs:
   build-and-scan:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./app
 
     steps:
       # Checkout the code repository
@@ -24,9 +27,8 @@ jobs:
 
       # Build the Docker image
       - name: Build Docker Image
-        working-directory: projects/Merge/pdfmerger
         run: |
-          docker build -t my-app:latest .
+          docker build -t my-app:latest ./projects/Merge/pdfmerger
 
       # Pull the Trivy image
       - name: Pull Trivy Scanner
