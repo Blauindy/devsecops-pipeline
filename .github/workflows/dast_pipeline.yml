@@ -16,7 +16,7 @@ jobs:
         uses: docker/setup-buildx-action@v1
 
       - name: Build Spring Docker Image
-        run: docker build -t my-spring-app .
+        run: docker build -t projects/Merge/pdfmerger .
 
       - name: Start Spring Application
         run: |
