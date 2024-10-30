@@ -15,16 +15,30 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
-      - name: Build Spring Docker Image
-        run: docker build -t projects/Merge/pdfmerger .
+      - name: Build merger Image
+        run: |
+          cd projects/Merge/pdfmerger
+          docker build -t pdf-merger .
+
+      - name: Build splitter Image
+        run: |
+          cd projects/Split/pdfsplitter
+          docker build -t pdf-splitter .
 
       - name: Start Spring Application
         run: |
           docker network create zap-spring-network
-          docker run -d --name my-spring-app --network zap-spring-network -p 8080:8080 my-spring-app
+          docker run -d --name pdf-splitter --network zap-spring-network -p 8080:8080 pdf-splitter
+          docker run -d --name pdf-merger --network zap-spring-network -p 8081:8080 pdf-merger
       
-      - name: Run ZAP Baseline Scan
-        run: docker run --rm --network zap-spring-network owasp/zap2docker-stable zap-baseline.py -t http://my-spring-app:8080 -r zap_report.html
+      - name: Test ob Container erreichbar
+        run: docker ps -a
+
+      - name: Run ZAP Baseline Scan at Merger
+        run: docker run --user root --network zap-spring-network -v $(pwd):/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t http://docker.io/library/pdf-merger:8081 -r zap_report_merge.html || true
+
+      - name: Run ZAP Baseline Scan at Splitter
+        run: docker run --user root --network zap-spring-network -v $(pwd):/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t http://docker.io/library/pdf-splitter:8080 -r zap_report_split.html || true
 
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v4
