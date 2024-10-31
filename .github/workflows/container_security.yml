@@ -21,10 +21,12 @@ jobs:
         run: |
           docker build -t pdfmerger:latest ./projects/Merge/pdfmerger
           docker build -t pdfsplitter:latest ./projects/Split/pdfsplitter
+          docker build -t datetime:latest ./projects/DateTime
+          docker build -t randomnumber:latest ./projects/RandomNumber
 
       - name: Scan Docker Images with Trivy
         run: |
-          images=("pdfmerger" "pdfsplitter")
+          images=("pdfmerger" "pdfsplitter" "datetime" "randomnumber")
           scan_results_dir="./trivy-results"
           mkdir -p "$scan_results_dir"
           for image in "${images[@]}"; do
