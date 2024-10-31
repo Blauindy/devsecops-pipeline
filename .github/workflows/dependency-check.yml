@@ -19,6 +19,12 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
+          
+      - name: Check Downloaded File Type
+        run: |
+          file dependency-check.zip  # Prüft, ob es wirklich ein ZIP-Archiv ist
+           cat dependency-check.zip  # Gibt den Inhalt aus, falls es eine Fehlermeldung ist
+        
       - name: Download OWASP Dependency Check
         run: |
           echo "Downloading OWASP Dependency Check..."
