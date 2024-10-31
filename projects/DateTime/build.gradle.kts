@@ -18,3 +18,9 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
 }
+
+dependencyCheck {
+    failBuildOnCVSS = 7.0f
+    format = org.owasp.dependencycheck.reporting.ReportGenerator.Format.ALL
+    outputDirectory = "${buildDir}/reports/dependency-check"
+}
