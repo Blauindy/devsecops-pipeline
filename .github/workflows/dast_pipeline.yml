@@ -3,7 +3,7 @@ name: ZAP Security Scan
 on:
   push:
     branches:
-      - dast_pipeline
+      - main
 
 jobs:
   zap-scan:
