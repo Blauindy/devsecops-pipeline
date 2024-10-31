@@ -42,7 +42,6 @@ tasks.jar {
     }
 }
 
-
 dependencyCheck {
     failBuildOnCVSS = 7
     format = 'ALL'
