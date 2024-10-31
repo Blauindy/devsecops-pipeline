@@ -20,25 +20,18 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
 
-      - name: Check Downloaded File Type
-        run: |
-          file  dependency-check-11.0.0-release.zip   # Prüft, ob es wirklich ein ZIP-Archiv ist
-           cat  dependency-check-11.0.0-release.zip   # Gibt den Inhalt aus, falls es eine Fehlermeldung ist
-        
       - name: Download OWASP Dependency Check
         run: |
-          echo "Downloading OWASP Dependency Check..."
-          curl -L -v -o dependency-check.zip https://github.com/jeremylong/DependencyCheck/releases/tag/v11.0.0/dependency-check-11.0.0-release.zip || {
-            echo "Download failed!"
-            exit 1
-          }
-          echo "Verifying the downloaded ZIP file..."
-          if [[ $(unzip -t dependency-check.zip) ]]; then
-            echo "ZIP file is valid."
+          echo "Downloading OWASP Dependency Check version 11.0.0..."
+          curl -L -o dependency-check.zip https://github.com/jeremylong/DependencyCheck/releases/download/v11.0.0/dependency-check-11.0.0-release.zip
+          if [ -f "dependency-check.zip" ]; then
+            echo "Download successful. Verifying file type..."
+            file dependency-check.zip
           else
-            echo "ZIP file is corrupted or invalid."
+            echo "Download failed: dependency-check.zip does not exist."
             exit 1
           fi
+        
           echo "Unzipping the file..."
           unzip -o dependency-check.zip -d $HOME/dependency-check
           echo "Listing the contents of the dependency-check directory after unzipping:"
