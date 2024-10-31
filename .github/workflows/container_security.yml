@@ -21,8 +21,8 @@ jobs:
         run: |
           docker build -t pdfmerger:latest ./projects/Merge/pdfmerger
           docker build -t pdfsplitter:latest ./projects/Split/pdfsplitter
-          docker build -t datetime:latest ./projects/DateTime
-          docker build -t randomnumber:latest ./projects/RandomNumber
+          docker build -t datetime:latest ./projects/DateTime/src/main/java/org/example
+          docker build -t randomnumber:latest ./projects/RandomNo/src/main/java/org/example
 
       - name: Scan Docker Images with Trivy
         run: |
