@@ -57,26 +57,3 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: ./gradlew build sonar --info
-
-#  dotnet_analysis:
-#    name: Build and analyze .NET project
- #   runs-on: ubuntu-latest
-#    steps:
- #     - uses: actions/checkout@v4
-#        with:
- #         fetch-depth: 0
-
- #     - name: Set up .NET
- #       uses: actions/setup-dotnet@v2
- #       with:
- #         dotnet-version: '6.x'
-
- #     - name: Build and analyze .NET project
- #       working-directory: projects/dotnet_project  # Zeile anpassen: tatsächlichen Pfad zum .NET-Projekt eingeben
- #       env:
- #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
- #       run: |
-#          dotnet-sonarscanner begin /k:"mein-sonarcloud-projekt-key" /o:"meine-organisation" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
- #         dotnet build
- #         dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
- #         # Zeile anpassen: mein-sonarcloud-projekt-key und meine-organisation mit tatsächlichen Werten ersetzen

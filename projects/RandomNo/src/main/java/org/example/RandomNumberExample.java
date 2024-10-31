@@ -1,4 +1,4 @@
-package AllFiles.app2;
+package org.example.RandomNumber;
 
 import java.util.Random;
 
