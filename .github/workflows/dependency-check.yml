@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - PackageScanner
+      - package_scanner
   pull_request:
     branches:
       - main
@@ -19,20 +19,19 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
+
       - name: Download OWASP Dependency Check
         run: |
-          echo "Downloading OWASP Dependency Check..."
-          curl -L -o dependency-check.zip https://github.com/jeremylong/DependencyCheck/releases/latest/download/dependency-check-11.0.0-release.zip || {
-            echo "Download failed!"
-            exit 1
-          }
-          echo "Verifying the downloaded ZIP file..."
-          if [[ $(unzip -t dependency-check.zip) ]]; then
-            echo "ZIP file is valid."
+          echo "Downloading OWASP Dependency Check version 11.0.0..."
+          curl -L -o dependency-check.zip https://github.com/jeremylong/DependencyCheck/releases/download/v11.0.0/dependency-check-11.0.0-release.zip
+          if [ -f "dependency-check.zip" ]; then
+            echo "Download successful. Verifying file type..."
+            file dependency-check.zip
           else
-            echo "ZIP file is corrupted or invalid."
+            echo "Download failed: dependency-check.zip does not exist."
             exit 1
           fi
+        
           echo "Unzipping the file..."
           unzip -o dependency-check.zip -d $HOME/dependency-check
           echo "Listing the contents of the dependency-check directory after unzipping:"
@@ -46,6 +45,8 @@ jobs:
           echo "Attempting to set permissions for dependency-check.sh"
           chmod +x $(find $HOME/dependency-check -name "dependency-check.sh") || echo "dependency-check.sh not found, skipping chmod."
       - name: Run OWASP Dependency Check
+        env:
+          NVD_API_KEY: ${{ '698c222e-b345-47e0-a4ed-b4d039e8a408' }}  # Hier wird der API-Schlüssel verwendet
         run: |
           echo "Running OWASP Dependency Check..."
           $(find $HOME/dependency-check -name "dependency-check.sh") --project JavaApp --scan ./ --format HTML --out ./dependency-check-report.html
