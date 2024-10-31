@@ -44,6 +44,6 @@ tasks.jar {
 
 dependencyCheck {
     failBuildOnCVSS = 7.0f
-    format = 'ALL'
+    format = ReportGenerator.Format.ALL
     outputDirectory = "${buildDir}/reports/dependency-check"
 }
