@@ -3,7 +3,7 @@ name: ZAP Security Scan
 on:
   push:
     branches:
-      - main
+      - dast_pipeline
 
 jobs:
   zap-scan:
@@ -25,20 +25,38 @@ jobs:
           cd projects/Split/pdfsplitter
           docker build -t pdf-splitter .
 
+      - name: Build date-time Image
+        run: |
+          cd projects/DateTime
+          docker build -t date-time .
+
+      - name: Build random-number Image
+        run: |
+          cd projects/RandomNumber
+          docker build -t random-number .
+
       - name: Start Spring Application
         run: |
           docker network create zap-spring-network
           docker run -d --name pdf-splitter --network zap-spring-network -p 8080:8080 pdf-splitter
           docker run -d --name pdf-merger --network zap-spring-network -p 8081:8080 pdf-merger
+          docker run -d --name date-time --network zap-spring-network -p 8082:8080 date-time
+          docker run -d --name random-number --network zap-spring-network -p 8083:8080 random-number
       
-      - name: Test ob Container erreichbar
+      - name: Docker Network Overfew
         run: docker ps -a
+
+      - name: Run ZAP Baseline Scan at Splitter
+        run: docker run --user root --network zap-spring-network -v $(pwd):/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t http://docker.io/library/pdf-splitter:8080 -r zap_report_split.html || true
 
       - name: Run ZAP Baseline Scan at Merger
         run: docker run --user root --network zap-spring-network -v $(pwd):/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t http://docker.io/library/pdf-merger:8081 -r zap_report_merge.html || true
 
-      - name: Run ZAP Baseline Scan at Splitter
-        run: docker run --user root --network zap-spring-network -v $(pwd):/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t http://docker.io/library/pdf-splitter:8080 -r zap_report_split.html || true
+      - name: Run ZAP Baseline Scan at DateTime
+        run: docker run --user root --network zap-spring-network -v $(pwd):/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t http://docker.io/library/date-time:8080 -r zap_report_split.html || true
+
+      - name: Run ZAP Baseline Scan at RandomNumber
+        run: docker run --user root --network zap-spring-network -v $(pwd):/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t http://docker.io/library/random-number:8081 -r zap_report_merge.html || true
 
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v4
