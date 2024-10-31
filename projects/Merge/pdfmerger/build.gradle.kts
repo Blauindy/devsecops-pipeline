@@ -43,7 +43,7 @@ tasks.jar {
 }
 
 dependencyCheck {
-    failBuildOnCVSS = 7
+    failBuildOnCVSS = 7.0
     format = 'ALL'
     outputDirectory = "${buildDir}/reports/dependency-check"
 }
