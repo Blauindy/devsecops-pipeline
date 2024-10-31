@@ -1,0 +1,56 @@
+name: Dependency Check
+
+on:
+  push:
+    branches:
+      - main
+      - PackageScanner
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  dependency-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+      - name: Download OWASP Dependency Check
+        run: |
+          echo "Downloading OWASP Dependency Check..."
+          curl -L -o dependency-check.zip https://github.com/jeremylong/DependencyCheck/releases/latest/download/dependency-check-11.0.0-release.zip || {
+            echo "Download failed!"
+            exit 1
+          }
+          echo "Verifying the downloaded ZIP file..."
+          if [[ $(unzip -t dependency-check.zip) ]]; then
+            echo "ZIP file is valid."
+          else
+            echo "ZIP file is corrupted or invalid."
+            exit 1
+          fi
+          echo "Unzipping the file..."
+          unzip -o dependency-check.zip -d $HOME/dependency-check
+          echo "Listing the contents of the dependency-check directory after unzipping:"
+          ls -R $HOME/dependency-check  # Überprüfen des Inhalts nach dem Entpacken
+      - name: Verify existence of dependency-check.sh
+        run: |
+          echo "Checking if dependency-check.sh exists..."
+          find $HOME/dependency-check -name "dependency-check.sh"
+      - name: Make dependency-check.sh executable
+        run: |
+          echo "Attempting to set permissions for dependency-check.sh"
+          chmod +x $(find $HOME/dependency-check -name "dependency-check.sh") || echo "dependency-check.sh not found, skipping chmod."
+      - name: Run OWASP Dependency Check
+        run: |
+          echo "Running OWASP Dependency Check..."
+          $(find $HOME/dependency-check -name "dependency-check.sh") --project JavaApp --scan ./ --format HTML --out ./dependency-check-report.html
+      - name: Upload report
+        uses: actions/upload-artifact@v3
+        with:
+          name: Dependency-Check-Report
+          path: ./dependency-check-report.html
