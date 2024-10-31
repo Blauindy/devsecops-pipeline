@@ -57,3 +57,25 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: ./gradlew build sonar --info
+
+      - name: Make gradlew executable (DateTime)
+        working-directory: projects/DateTime/
+        run: chmod +x gradlew
+
+      - name: Build and analyze DateTime
+        working-directory: projects/DateTime/  # Zeile anpassen: tatsächlichen Pfad zum Java-Projekt 2 eingeben
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: ./gradlew build sonar --info
+      
+      - name: Make gradlew executable (RandomNo)
+        working-directory: projects/RandomNo/
+        run: chmod +x gradlew
+
+      - name: Build and analyze RandomNo
+        working-directory: projects/RandomNo/  # Zeile anpassen: tatsächlichen Pfad zum Java-Projekt 2 eingeben
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: ./gradlew build sonar --info
