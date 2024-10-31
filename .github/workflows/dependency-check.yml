@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - PackageScanner
+      - package_scanner
   pull_request:
     branches:
       - main
