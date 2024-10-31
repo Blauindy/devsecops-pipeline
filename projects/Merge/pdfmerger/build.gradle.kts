@@ -3,6 +3,7 @@ plugins {
     id("org.springframework.boot") version "3.2.2"
     id("io.spring.dependency-management") version "1.1.4"
     id("org.sonarqube") version "5.1.0.4882"
+    id("org.owasp.dependencycheck") version "6.0.2"
 }
 
 sonar {
@@ -41,9 +42,6 @@ tasks.jar {
     }
 }
 
-plugins {
-    id "org.owasp.dependencycheck" version "6.0.2"
-}
 
 dependencyCheck {
     failBuildOnCVSS = 7
