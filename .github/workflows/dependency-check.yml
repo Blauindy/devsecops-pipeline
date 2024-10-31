@@ -3,22 +3,20 @@ name: Dependency Check
 on:
   push:
     branches:
-      - main
-      - package_scanner
+      - main  # oder dein Branch-Name
+      - develop  # optional, falls du mehrere Branches überwachen möchtest
   pull_request:
     branches:
       - main
+      - develop
 
 jobs:
   dependency-check:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - name: Set up JDK
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '11'
+      - name: Checkout code
+        uses: actions/checkout@v2
 
       - name: Download OWASP Dependency Check
         run: |
@@ -31,25 +29,43 @@ jobs:
             echo "Download failed: dependency-check.zip does not exist."
             exit 1
           fi
-        
+
           echo "Unzipping the file..."
           unzip -o dependency-check.zip -d $HOME/dependency-check
           echo "Listing the contents of the dependency-check directory after unzipping:"
           ls -R $HOME/dependency-check  # Überprüfen des Inhalts nach dem Entpacken
+
       - name: Verify existence of dependency-check.sh
         run: |
           echo "Checking if dependency-check.sh exists..."
-          find $HOME/dependency-check -name "dependency-check.sh"
+          find $HOME/dependency-check -name "dependency-check.sh" || echo "dependency-check.sh not found."
+
       - name: Make dependency-check.sh executable
         run: |
           echo "Attempting to set permissions for dependency-check.sh"
-          chmod +x $(find $HOME/dependency-check -name "dependency-check.sh") || echo "dependency-check.sh not found, skipping chmod."
+          DEPENDENCY_CHECK_SCRIPT=$(find $HOME/dependency-check -name "dependency-check.sh")
+          if [ -f "$DEPENDENCY_CHECK_SCRIPT" ]; then
+            chmod +x "$DEPENDENCY_CHECK_SCRIPT"
+            echo "Set executable permissions for dependency-check.sh."
+          else
+            echo "dependency-check.sh not found, skipping chmod."
+          fi
+
       - name: Run OWASP Dependency Check
+        env:
+          NVD_API_KEY: ${{ '698c222e-b345-47e0-a4ed-b4d039e8a408' }}  # Hier wird der API-Schlüssel verwendet
         run: |
           echo "Running OWASP Dependency Check..."
-          $(find $HOME/dependency-check -name "dependency-check.sh") --project JavaApp --scan ./ --format HTML --out ./dependency-check-report.html
-      - name: Upload report
-        uses: actions/upload-artifact@v3
+          DEPENDENCY_CHECK_SCRIPT=$(find $HOME/dependency-check -name "dependency-check.sh")
+          if [ -f "$DEPENDENCY_CHECK_SCRIPT" ]; then
+            "$DEPENDENCY_CHECK_SCRIPT" --project JavaApp --scan ./ --format HTML --out ./dependency-check-report.html --nvdApiKey "$NVD_API_KEY"
+          else
+            echo "dependency-check.sh not found, skipping the Dependency Check."
+            exit 1
+          fi
+
+      - name: Upload Dependency Check Report
+        uses: actions/upload-artifact@v2
         with:
-          name: Dependency-Check-Report
+          name: dependency-check-report
           path: ./dependency-check-report.html
