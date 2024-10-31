@@ -22,7 +22,7 @@ jobs:
       - name: Download OWASP Dependency Check
         run: |
           echo "Downloading OWASP Dependency Check..."
-          curl -L --retry 3 -o dependency-check.zip https://github.com/jeremylong/DependencyCheck/releases/tag/v11.0.0/dependency-check-11.0.0-release.zip || {
+          curl -L -v -o dependency-check.zip https://github.com/jeremylong/DependencyCheck/releases/tag/v11.0.0/dependency-check-11.0.0-release.zip || {
             echo "Download failed!"
             exit 1
           }
