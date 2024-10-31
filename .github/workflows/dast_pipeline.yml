@@ -27,12 +27,12 @@ jobs:
 
       - name: Build date-time Image
         run: |
-          cd projects/DateTime
+          cd projects/DateTime/src/main/java/org/example
           docker build -t date-time .
 
       - name: Build random-number Image
         run: |
-          cd projects/RandomNumber
+          cd projects/RandomNo/src/main/java/org/example
           docker build -t random-number .
 
       - name: Start Spring Application
