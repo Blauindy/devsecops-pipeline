@@ -31,11 +31,4 @@ public class PDFMergeController {
         pdfMergeService.mergeFiles();
         return ResponseEntity.ok(pdfMergeService.getMergedFiles());
     }
-
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http
-            .headers()
-            .contentSecurityPolicy("default-src 'self'; script-src 'self' https://trusted.cdn.com;");
-    }
 }
