@@ -1,6 +1,7 @@
 plugins {
     id("java")
     id("org.sonarqube") version "5.1.0.4882"
+    id("org.owasp.dependencycheck") version "6.0.2"
 }
 
 sonar {
